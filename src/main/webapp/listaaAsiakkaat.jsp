@@ -12,7 +12,7 @@
 	<table id="listaus">
 		<thead>	
 		<tr>
-			<th colspan ="5" class ="oikealle"><span id "uusiAsiakas">Lis‰‰ asiakas</span></th>
+			<th colspan ="5" class ="oikealle"><span id ="uusiAsiakas">Lis‰‰ asiakas</span></th>
 		</tr>
 			<tr>
 				<th colspan="3" class="oikealle">Hakusana:</th>
@@ -61,7 +61,8 @@ function haeTiedot(){
         	htmlStr+="<td>"+field.sukunimi+"</td>";
         	htmlStr+="<td>"+field.puhelin+"</td>";
         	htmlStr+="<td>"+field.sposti+"</td>";  
-        	htmlStr+="<td><span class ='Poista' onclick=poista("+field.etunimi+ " "+field.sukunimi+"')>Poista</span></td>";
+        	htmlStr+="<td><a href='muutaasiakas.jsp?asiakas_id="+field.asiakas_id+"'Muuta&nbsp;" ;
+        	htmlStr+="<span class ='Poista' onclick=poista("+field.etunimi+ " "+field.sukunimi+"')>Poista</span></td>";
         	htmlStr+="</tr>";
         	$("#listaus tbody").append(htmlStr);
         });

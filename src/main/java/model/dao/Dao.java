@@ -1,5 +1,6 @@
 package model.dao;
 
+import java.io.File;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -17,7 +18,8 @@ public class Dao {
 	private Connection yhdista(){
     	Connection con = null;    	
     	String path = System.getProperty("catalina.base");    	
-    	path = path.substring(0, path.indexOf(".metadata")).replace("\\", "/"); //Eclipsessa
+    	//path = path.substring(0, path.indexOf(".metadata")).replace("\\", "/"); //Eclipsessa
+    	path =  new File(System.getProperty("user.dir")).getParentFile().toString() +"\\"; 
     	//System.out.println("Polku on: " + path);
     	//path += "/webapps/"; //Tuotannossa. Laita kanta webapps-kansioon.
     	String url = "jdbc:sqlite:"+path+db;    	
@@ -122,5 +124,71 @@ public class Dao {
 		}				
 		return paluuArvo;
 	}	
+	public Asiakas etsiAsiakas(String asiakas_id) {
+		Asiakas asiakas = null;
+		sql = "SELECT * FROM asiakkaat WHERE asiakas_id=?";       
+		try {
+			con=yhdista();
+			if(con!=null){ 
+				stmtPrep = con.prepareStatement(sql); 
+				stmtPrep.setString(1, asiakas_id);
+        		rs = stmtPrep.executeQuery();  
+        		if(rs.isBeforeFirst()){ //jos kysely tuotti dataa, eli rekNo on käytössä
+        			rs.next();
+        			asiakas = new Asiakas(); 
+        			asiakas.setAsiakas_id(rs.getInt(1));
+        			asiakas.setEtunimi(rs.getString(2));
+					asiakas.setSukunimi(rs.getString(3));	
+					asiakas.setPuhelin(rs.getString(4));
+					asiakas.setSposti(rs.getString(5));
+					   			      			
+				}        		
+			}	
+			con.close();  
+		} catch (Exception e) {
+			e.printStackTrace();
+		}		
+		return asiakas;		
+	}
+	
 
+	public boolean muutaAsiakas(Asiakas asiakas, int asiakas_id){
+		boolean paluuArvo=true;
+		sql="UPDATE asiakkaat SET etunimi=?, sukunimi=?, puhelin=?, sposti=? WHERE asiakas_id=?";						  
+		try {
+			con = yhdista();
+			stmtPrep=con.prepareStatement(sql); 
+			stmtPrep.setString(1, asiakas.getEtunimi());
+			stmtPrep.setString(2, asiakas.getSukunimi());
+			stmtPrep.setString(3, asiakas.getPuhelin());
+			stmtPrep.setString(4, asiakas.getSposti());
+			stmtPrep.setInt(5, asiakas_id);
+			stmtPrep.executeUpdate();
+	        con.close();
+		} catch (Exception e) {				
+			e.printStackTrace();
+			paluuArvo=false;
+		}				
+		return paluuArvo;
+	}
+	public boolean poistaKaikkiAsiakkaatt(String pwd){ //Oikeassa elämässä tiedot ensisijaisesti merkitään poistetuksi.
+		boolean paluuArvo=true;
+		if(pwd!="nimda") {
+			return false;
+		}			
+		sql="DELETE FROM asiakkaat";						  
+		try {
+			con = yhdista();
+			stmtPrep=con.prepareStatement(sql);						
+			stmtPrep.executeUpdate();
+	        con.close();
+		} catch (Exception e) {				
+			e.printStackTrace();
+			paluuArvo=false;
+		}				
+		return paluuArvo;
+	}	
 }
+
+
+
